@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+client/node_modules/
+
+# Python virtual environment
+venv/
+server/venv/
+__pycache__/
+server/__pycache__/
+*.pyc
+
+# Local contact submissions (generated at runtime by the backend)
+contacts.json
+server/contacts.json
+
+# Build output
+client/dist/
+dist/
+
+# Environment / editor
+.env
+.env.local
+.DS_Store
+.vscode/

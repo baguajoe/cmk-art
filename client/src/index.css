@@ -1,0 +1,649 @@
+/* ==========================================================================
+   CMK Art — Global Stylesheet
+   Classic gallery palette: background #FAFAF8, text #2B2B2B, accent #B8893A.
+   Neutral and minimal so the colorful paintings stand out. Accent is used
+   only for buttons, links, and highlights.
+   ========================================================================== */
+
+:root {
+  --bg: #fafaf8;
+  --text: #2b2b2b;
+  --accent: #b8893a;
+  --accent-dark: #9c722d;
+  --muted: #777;
+  --border: #e4e2dc;
+  --card-bg: #ffffff;
+  --max-width: 1200px;
+  --radius: 6px;
+  --shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* ---------- Reset & base ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Helvetica Neue', 'Segoe UI', Arial, system-ui, sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+h1 {
+  font-size: 2.2rem;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--accent-dark);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+/* ---------- Layout shell ---------- */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.page {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-block;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--radius);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-ghost:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Navbar
+   ========================================================================== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(250, 250, 248, 0.95);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.brand-accent {
+  color: var(--accent);
+  margin-left: 2px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.75rem;
+}
+
+.nav-links a {
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.98rem;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+/* NavLink adds the "active" class to the current route. */
+.nav-links a.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Hamburger button — hidden on desktop, shown on mobile. */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 26px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: var(--text);
+  border-radius: 2px;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.footer p {
+  margin: 0;
+}
+
+/* ==========================================================================
+   Home
+   ========================================================================== */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+
+.hero-title {
+  font-size: 3.4rem;
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.04em;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--accent);
+  margin: 0 0 1.5rem;
+  font-weight: 500;
+}
+
+.hero-welcome {
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+  max-width: 46ch;
+}
+
+.hero-image img {
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  object-fit: cover;
+  aspect-ratio: 4 / 5;
+}
+
+.about-us {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.about-us h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.about-us .btn {
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
+   Bio
+   ========================================================================== */
+.bio {
+  max-width: 760px;
+}
+
+.bio h1 {
+  margin-bottom: 1.5rem;
+}
+
+.bio-text p {
+  font-size: 1.08rem;
+  margin-bottom: 1.4rem;
+}
+
+/* ==========================================================================
+   Gallery
+   ========================================================================== */
+.gallery-intro {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.filter-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.45rem 1.2rem;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.75rem;
+}
+
+.empty-state {
+  color: var(--muted);
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* ---------- Painting card ---------- */
+.painting-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.painting-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+}
+
+.painting-image-btn {
+  position: relative;
+  border: none;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+
+.painting-image-btn img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+/* Status badge sits on the image. */
+.status-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 999px;
+  color: #fff;
+}
+
+.badge-available {
+  background: var(--accent);
+}
+
+.badge-sold {
+  background: #6b6b6b;
+}
+
+.painting-info {
+  padding: 1rem 1.1rem 1.25rem;
+}
+
+.painting-title {
+  font-size: 1.1rem;
+  margin: 0 0 0.4rem;
+}
+
+.painting-meta {
+  margin: 0.15rem 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.painting-price {
+  margin-top: 0.6rem;
+  margin-bottom: 0;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Sold pieces are visually de-emphasized: greyed + struck-through price. */
+.painting-card.is-sold {
+  opacity: 0.85;
+}
+
+.painting-card.is-sold .painting-image-btn img {
+  filter: grayscale(35%);
+}
+
+.price-sold {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+/* ==========================================================================
+   Lightbox
+   ========================================================================== */
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 100;
+  animation: fade-in 0.15s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lightbox-content {
+  position: relative;
+  background: #fff;
+  border-radius: var(--radius);
+  max-width: 880px;
+  width: 100%;
+  max-height: 92vh;
+  overflow: auto;
+  text-align: left;
+}
+
+.lightbox-content img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  background: #f3f1ec;
+}
+
+.lightbox-caption {
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.lightbox-caption h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.3rem;
+}
+
+.lightbox-caption p {
+  margin: 0.2rem 0;
+  color: var(--muted);
+}
+
+.lightbox-price {
+  color: var(--text) !important;
+  font-weight: 600;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.7rem;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-close:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* ==========================================================================
+   Contact
+   ========================================================================== */
+.contact-intro {
+  color: var(--muted);
+  max-width: 60ch;
+  margin-bottom: 2rem;
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 3rem;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.contact-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 0.92rem;
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.contact-form input,
+.contact-form textarea {
+  font: inherit;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  resize: vertical;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(184, 137, 58, 0.15);
+}
+
+.contact-form .btn {
+  align-self: flex-start;
+}
+
+.form-feedback {
+  font-weight: 600;
+  margin: 0;
+}
+
+.form-feedback.success {
+  color: #2e7d32;
+}
+
+.form-feedback.error {
+  color: #c0392b;
+}
+
+.contact-details {
+  text-align: left;
+}
+
+.contact-details h2 {
+  font-size: 1.2rem;
+  margin-top: 0;
+}
+
+.contact-details p {
+  margin: 0.6rem 0;
+}
+
+/* ==========================================================================
+   Responsive — tablet & mobile
+   ========================================================================== */
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hero-image {
+    order: -1; /* image above text on small screens */
+  }
+
+  .contact-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 680px) {
+  h1 {
+    font-size: 1.9rem;
+  }
+
+  .hero-title {
+    font-size: 2.6rem;
+  }
+
+  /* Show hamburger, hide inline links until toggled. */
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 1.5rem 1rem;
+    /* Hidden by default; the "open" class reveals it. */
+    display: none;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links a {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-links a.active {
+    border-bottom-color: var(--accent);
+  }
+}
