@@ -9,16 +9,24 @@ __pycache__/
 server/__pycache__/
 *.pyc
 
-# Local contact submissions (generated at runtime by the backend)
+# Local data files generated at runtime by the backend (git-ignored so they
+# never get committed — the order EMAIL is the real record of a sale).
 contacts.json
 server/contacts.json
+orders.json
+server/orders.json
+sold.json
+server/sold.json
 
 # Build output
 client/dist/
 dist/
 
-# Environment / editor
+# Environment / editor (all .env files, anywhere — real secrets live here)
 .env
-.env.local
+.env.*
+!.env.example
+client/.env
+server/.env
 .DS_Store
 .vscode/

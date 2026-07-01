@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { formatPrice } from '../utils/format.js'
 
 // Lightbox shows an enlarged view of a single painting in an overlay.
 // Props:
@@ -37,10 +38,15 @@ export default function Lightbox({ painting, onClose }) {
         <div className="lightbox-caption">
           <h3>{painting.title}</h3>
           <p>
-            {painting.medium} · {painting.size} · {painting.year}
+            {painting.medium} · {painting.size}
           </p>
+          {/* description is optional — only render it once filled in. */}
+          {painting.description && (
+            <p className="lightbox-description">{painting.description}</p>
+          )}
           <p className="lightbox-price">
-            {painting.price} — {painting.status}
+            {formatPrice(painting.price)} —{' '}
+            {painting.status === 'sold' ? 'Sold' : 'Available'}
           </p>
         </div>
       </div>

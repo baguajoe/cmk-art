@@ -3,13 +3,16 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
+import { CartProvider } from './context/CartContext.jsx'
 
-// Entry point: mount the app and wrap it in BrowserRouter so react-router-dom
-// can handle client-side routing across the pages.
+// Entry point: mount the app, wrap it in BrowserRouter for client-side routing,
+// and in CartProvider so the shopping cart is available site-wide.
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <CartProvider>
+        <App />
+      </CartProvider>
     </BrowserRouter>
   </StrictMode>,
 )
