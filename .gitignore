@@ -9,24 +9,18 @@ __pycache__/
 server/__pycache__/
 *.pyc
 
-# Local data files generated at runtime by the backend (git-ignored so they
-# never get committed — the order EMAIL is the real record of a sale).
+# Local data file from the optional legacy Flask server (server/app.py). The
+# live site is static and does not use it.
 contacts.json
 server/contacts.json
-orders.json
-server/orders.json
-sold.json
-server/sold.json
 
 # Build output
 client/dist/
 dist/
 
-# Environment / editor (all .env files, anywhere — real secrets live here)
+# Environment / editor. The static site has no secrets or .env files, but keep
+# .env ignored so nothing sensitive is ever committed by accident.
 .env
 .env.*
-!.env.example
-client/.env
-server/.env
 .DS_Store
 .vscode/

@@ -1,53 +1,76 @@
-import { useEffect, useRef } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { useCart } from '../context/CartContext.jsx'
+import { Link, useLocation } from 'react-router-dom'
+import config from '../config.js'
 
-// ThankYou page (route "/thank-you").
-// Stripe redirects here after a successful payment with a ?session_id=... in
-// the URL (see the success_url the backend sets on the Checkout Session).
+// ThankYou page (route "/thank-you") — the order confirmation screen.
 //
-// What happens here:
-//   1. We clear the cart (the order is placed).
-//   2. We ping the backend /api/order-complete with the session id as a
-//      FALLBACK trigger for the confirmation email + marking the piece sold.
-//      The Stripe webhook (see server/app.py) is the PRIMARY, reliable trigger;
-//      this call just helps in local/dev testing where a webhook may not be
-//      configured. The backend de-dupes by session id so no double emails.
+// The Checkout page navigates here after a successful Formspree submission,
+// passing { name, total } in router state. We use those to show the buyer
+// exactly what to send and how, via the manual CashApp/Venmo flow.
+//
+// If someone lands here directly (no router state — e.g. a refresh or a typed
+// URL), we show a friendly generic message instead of order-specific details.
 export default function ThankYou() {
-  const [params] = useSearchParams()
-  const sessionId = params.get('session_id')
-  const { clearCart } = useCart()
-  // Guard so React StrictMode's double-invoke doesn't fire the effect twice.
-  const done = useRef(false)
+  const { state } = useLocation()
+  const name = state?.name
+  const total = state?.total
 
-  useEffect(() => {
-    if (done.current) return
-    done.current = true
-
-    clearCart()
-
-    if (sessionId) {
-      // Fire-and-forget; failures are non-fatal (the webhook is authoritative).
-      fetch('/api/order-complete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: sessionId }),
-      }).catch(() => {})
-    }
-  }, [sessionId, clearCart])
+  // Direct visit with no order context.
+  if (!name || !total) {
+    return (
+      <div className="page thankyou">
+        <h1>Thank You!</h1>
+        <p className="thankyou-lead">
+          If you just placed an order request, check your email for the payment
+          details. Otherwise, browse the gallery to find your next piece.
+        </p>
+        <Link to="/gallery" className="btn btn-primary">
+          Back to the Gallery
+        </Link>
+      </div>
+    )
+  }
 
   return (
     <div className="page thankyou">
-      <h1>Thank You! 🎉</h1>
+      <h1>Order Request Received 🎉</h1>
       <p className="thankyou-lead">
-        Your order is confirmed. A confirmation has been sent and Carmen will be
-        in touch about shipping your original artwork.
+        Thank you, {name}! Your order request has been received. To complete
+        your purchase, please send payment using the details below.
       </p>
-      {sessionId && (
-        <p className="thankyou-ref">
-          Order reference: <code>{sessionId}</code>
+
+      {/* ---------- Payment instructions ---------- */}
+      <div className="thankyou-pay">
+        <h2>Send your payment</h2>
+
+        <p className="thankyou-total">
+          Amount to send: <strong>{total}</strong>
         </p>
-      )}
+
+        {/* Primary: CashApp */}
+        <p className="thankyou-pay-line">
+          <strong>CashApp (preferred):</strong>{' '}
+          <span className="thankyou-handle">{config.CASHAPP_HANDLE}</span>
+        </p>
+        <p className="thankyou-pay-note">
+          Please include your name (<strong>{name}</strong>) in the payment note
+          so Carmen can match it to your order.
+        </p>
+
+        {/* Secondary: Venmo (optional) */}
+        {config.VENMO_HANDLE && (
+          <p className="thankyou-pay-line">
+            <strong>Venmo (optional alternative):</strong>{' '}
+            <span className="thankyou-handle">{config.VENMO_HANDLE}</span>
+            {' — '}again, include your name in the note.
+          </p>
+        )}
+
+        <p className="thankyou-ship-note">
+          Your painting ships as soon as your payment is confirmed. Carmen will
+          be in touch by email to arrange delivery.
+        </p>
+      </div>
+
       <Link to="/gallery" className="btn btn-primary">
         Back to the Gallery
       </Link>

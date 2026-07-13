@@ -976,28 +976,10 @@ p {
   margin: 0;
 }
 
-.other-pay {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
-}
-
-.other-pay h3 {
-  margin: 0 0 0.5rem;
-}
-
-.other-pay-note {
-  font-size: 0.88rem;
+.field-optional {
+  font-weight: 400;
   color: var(--muted);
-}
-
-.other-pay-list {
-  list-style: none;
-  padding: 0;
-  margin: 0.75rem 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+  font-size: 0.82rem;
 }
 
 .link-button {
@@ -1023,12 +1005,52 @@ p {
   margin-bottom: 1rem;
 }
 
-.thankyou-ref code {
+.thankyou-pay {
+  text-align: left;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem 1.75rem;
+  margin: 1.5rem 0;
+}
+
+.thankyou-pay h2 {
+  margin: 0 0 0.75rem;
+}
+
+.thankyou-total {
+  font-size: 1.15rem;
+  margin: 0 0 1rem;
+}
+
+.thankyou-total strong {
+  color: var(--accent-dark);
+}
+
+.thankyou-pay-line {
+  margin: 0.5rem 0;
+}
+
+.thankyou-handle {
   background: #f0eee8;
-  padding: 0.15rem 0.4rem;
+  padding: 0.15rem 0.45rem;
   border-radius: 4px;
-  font-size: 0.85rem;
-  word-break: break-all;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+
+.thankyou-pay-note {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin: 0.25rem 0 1rem;
+}
+
+.thankyou-ship-note {
+  font-size: 0.92rem;
+  margin: 1rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
 }
 
 .thankyou .btn {

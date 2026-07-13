@@ -2,23 +2,34 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext.jsx'
 import { formatPrice } from '../utils/format.js'
-import paymentHandles from '../data/paymentHandles.js'
+import { FORMSPREE_ENDPOINT } from '../config.js'
 
 // Checkout page (route "/checkout").
-// - Shows the order summary (items + total).
-// - Collects buyer name, email, and shipping address.
-// - Primary payment is Stripe Checkout: we POST the cart to the backend, which
-//   creates a Stripe Checkout Session and returns its hosted-page URL; we then
-//   redirect the browser there. On success Stripe returns the buyer to the
-//   Thank-You page; on cancel, back here.
-// - Below the Stripe button are manual payment options (CashApp / Venmo /
-//   Zelle) — see /data/paymentHandles.js to set those handles.
+//
+// This is a fully STATIC, no-backend checkout:
+//   * Shows the order summary (items + total).
+//   * Collects buyer name, email, shipping address, and an optional message.
+//   * On submit we POST the order as JSON to Formspree (see /src/config.js),
+//     which emails Carmen the order details. No page reload; we handle success
+//     and error states inline.
+//   * On success we send the buyer to the Thank-You page (route "/thank-you"),
+//     passing the order name + total in router state so it can show the
+//     CashApp/Venmo payment instructions.
+//
+// NOTE: payment is MANUAL. We deliberately do NOT mark any painting "sold" here
+// — Carmen sets a painting's status to "sold" by hand in
+// src/data/paintings.js AFTER she confirms the CashApp/Venmo payment landed.
 export default function Checkout() {
-  const { items, subtotal, count } = useCart()
+  const { items, subtotal, count, clearCart } = useCart()
   const navigate = useNavigate()
 
-  const [buyer, setBuyer] = useState({ name: '', email: '', address: '' })
-  // 'idle' | 'redirecting' | 'error'
+  const [buyer, setBuyer] = useState({
+    name: '',
+    email: '',
+    address: '',
+    message: '',
+  })
+  // 'idle' | 'sending' | 'error'
   const [status, setStatus] = useState('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -27,37 +38,69 @@ export default function Checkout() {
     setBuyer((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleStripeCheckout = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setStatus('redirecting')
+    setStatus('sending')
     setErrorMsg('')
 
+    // Build a readable list of the requested paintings for the email.
+    const paintingList = items.map((p) => ({
+      title: p.title,
+      size: p.size,
+      price: formatPrice(p.price),
+    }))
+
+    // A one-line-per-painting summary so the Formspree email is easy to read.
+    const paintingsText = items
+      .map((p) => `${p.title} (${p.size}) — ${formatPrice(p.price)}`)
+      .join('\n')
+
+    const payload = {
+      type: 'ORDER REQUEST',
+      name: buyer.name.trim(),
+      email: buyer.email.trim(),
+      address: buyer.address.trim(),
+      message: buyer.message.trim(),
+      paintings: paintingsText,
+      paintings_detail: paintingList,
+      total: formatPrice(subtotal),
+      // _subject controls the email subject line Formspree sends.
+      _subject: `CMK Art order request — ${buyer.name.trim()} — ${formatPrice(subtotal)}`,
+    }
+
     try {
-      const res = await fetch('/api/create-checkout-session', {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          // Send only the ids; the backend looks up the authoritative price
-          // and availability so the client can't tamper with amounts.
-          items: items.map((p) => ({ id: p.id })),
-          buyer,
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
       })
 
-      const data = await res.json().catch(() => ({}))
-
-      if (res.ok && data.url) {
-        // Hand off to Stripe's hosted checkout page.
-        window.location.href = data.url
+      if (res.ok) {
+        // Capture the order details for the confirmation screen BEFORE we clear
+        // the cart (clearing resets subtotal to 0).
+        const orderTotal = formatPrice(subtotal)
+        const buyerName = buyer.name.trim()
+        clearCart()
+        navigate('/thank-you', {
+          state: { name: buyerName, total: orderTotal },
+        })
         return
       }
 
+      // Formspree returns JSON with an "errors" array on failure.
+      const data = await res.json().catch(() => ({}))
+      const firstError =
+        Array.isArray(data.errors) && data.errors[0]?.message
       setErrorMsg(
-        data.error || 'Could not start checkout. Please try again.'
+        firstError ||
+          'Could not send your order request. Please try again, or use the Contact page.'
       )
       setStatus('error')
     } catch {
-      setErrorMsg('Could not reach the server. Please try again later.')
+      setErrorMsg('Could not reach the order service. Please try again later.')
       setStatus('error')
     }
   }
@@ -77,7 +120,7 @@ export default function Checkout() {
     )
   }
 
-  const canPay =
+  const canSubmit =
     buyer.name.trim() && buyer.email.trim() && buyer.address.trim()
 
   return (
@@ -106,9 +149,9 @@ export default function Checkout() {
           </div>
         </section>
 
-        {/* ---------- Buyer info + payment ---------- */}
+        {/* ---------- Buyer info + submit ---------- */}
         <section className="checkout-payment">
-          <form className="checkout-form" onSubmit={handleStripeCheckout}>
+          <form className="checkout-form" onSubmit={handleSubmit}>
             <h2>Your Details</h2>
             <label>
               Full name
@@ -141,54 +184,36 @@ export default function Checkout() {
                 required
               />
             </label>
+            <label>
+              Message <span className="field-optional">(optional)</span>
+              <textarea
+                name="message"
+                rows="3"
+                placeholder="Anything you'd like Carmen to know?"
+                value={buyer.message}
+                onChange={handleChange}
+              />
+            </label>
 
             <button
               type="submit"
               className="btn btn-primary checkout-pay-btn"
-              disabled={!canPay || status === 'redirecting'}
+              disabled={!canSubmit || status === 'sending'}
             >
-              {status === 'redirecting'
-                ? 'Redirecting to Stripe…'
-                : `Pay with Card · ${formatPrice(subtotal)}`}
+              {status === 'sending'
+                ? 'Sending…'
+                : `Place Order Request · ${formatPrice(subtotal)}`}
             </button>
 
             {status === 'error' && (
               <p className="form-feedback error">{errorMsg}</p>
             )}
             <p className="checkout-secure-note">
-              Card payments are processed securely by Stripe. You'll be taken to
-              Stripe's hosted checkout page.
+              Submitting sends Carmen your order request. Payment is arranged
+              afterward by CashApp — you'll see the instructions on the next
+              screen. Nothing is charged automatically.
             </p>
           </form>
-
-          {/* ---------- Manual payment options ---------- */}
-          <div className="other-pay">
-            <h3>Other ways to pay</h3>
-            <p className="other-pay-note">
-              Prefer to pay directly? Use one of the options below, then{' '}
-              <a href="/contact">message me</a> with your name and the piece(s)
-              you bought so I can confirm and ship. (These are manual — please
-              still fill in your shipping address above or include it in your
-              message.)
-            </p>
-            <ul className="other-pay-list">
-              {paymentHandles.cashapp && (
-                <li>
-                  <strong>CashApp:</strong> {paymentHandles.cashapp}
-                </li>
-              )}
-              {paymentHandles.venmo && (
-                <li>
-                  <strong>Venmo:</strong> {paymentHandles.venmo}
-                </li>
-              )}
-              {paymentHandles.zelle && (
-                <li>
-                  <strong>Zelle:</strong> {paymentHandles.zelle}
-                </li>
-              )}
-            </ul>
-          </div>
         </section>
       </div>
     </div>

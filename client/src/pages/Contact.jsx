@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import config, { FORMSPREE_ENDPOINT } from '../config.js'
 
 // Contact page (route "/contact").
 // - Controlled form (Name, Email, Message) backed by useState.
-// - On submit, POSTs JSON to the Flask backend at /api/contact.
-//   The "/api" prefix is proxied to Flask by Vite in dev (see vite.config.js).
+// - On submit, POSTs JSON to Formspree (see /src/config.js) — the same static,
+//   no-backend service the Checkout page uses. Formspree emails Carmen the
+//   message. No Flask backend required.
 // - Shows a success message on HTTP 200 and an error message on failure,
 //   all without reloading the page.
 export default function Contact() {
@@ -25,24 +27,33 @@ export default function Contact() {
     setErrorMsg('')
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          ...form,
+          type: 'CONTACT MESSAGE',
+          _subject: `CMK Art contact — ${form.name.trim()}`,
+        }),
       })
 
       if (res.ok) {
         setStatus('success')
         setForm({ name: '', email: '', message: '' }) // clear the form
       } else {
-        // Try to surface the backend's error message if present.
+        // Formspree returns { errors: [{ message }] } on failure.
         const data = await res.json().catch(() => ({}))
-        setErrorMsg(data.error || 'Something went wrong. Please try again.')
+        const firstError =
+          Array.isArray(data.errors) && data.errors[0]?.message
+        setErrorMsg(firstError || 'Something went wrong. Please try again.')
         setStatus('error')
       }
     } catch {
-      // Network error / backend not reachable.
-      setErrorMsg('Could not reach the server. Please try again later.')
+      // Network error / service not reachable.
+      setErrorMsg('Could not send your message. Please try again later.')
       setStatus('error')
     }
   }
@@ -114,10 +125,15 @@ export default function Contact() {
         <aside className="contact-details">
           <h2>Other ways to connect</h2>
 
-          {/* Placeholder email — replace with Carmen's real address. */}
+          {/* Placeholder email — replace with Carmen's real address if different. */}
           <p>
             <strong>Email:</strong>{' '}
-            <a href="mailto:hello@cmkart.example">hello@cmkart.example</a>
+            <a href="mailto:cmkart@gmail.com">cmkart@gmail.com</a>
+          </p>
+
+          {/* CashApp handle pulled from config so it stays in one place. */}
+          <p>
+            <strong>CashApp:</strong> {config.CASHAPP_HANDLE}
           </p>
 
           <p>

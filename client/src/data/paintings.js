@@ -16,8 +16,8 @@
 //       medium      — e.g. 'acrylic on canvas'.
 //       size        — physical dimensions, e.g. '14" x 18"'.
 //       price       — a WHOLE-DOLLAR NUMBER, e.g. 242 (NOT "$242" and no cents).
-//                      Displayed with formatPrice() and sent to Stripe as the
-//                      charge amount, so keep it a plain number.
+//                      Displayed with formatPrice() and included in the order
+//                      email, so keep it a plain number.
 //       image       — path to the photo, "/images/<filename>" (see below).
 //       status      — MUST be exactly "available" or "sold" (lowercase). Sold
 //                      pieces show a "Sold" badge and can't be added to the cart.
@@ -30,13 +30,13 @@
 //  number (e.g. price: 400). For a description, type text between the quotes
 //  (e.g. description: 'A continuous-line study of...').
 //
-//  HOW TO MARK SOMETHING SOLD
-//  --------------------------
-//  Change its status to "sold". NOTE: when a Stripe order comes through, the
-//  order email (see the backend) is the real record of the sale. For now you
-//  confirm sales by email and flip status to "sold" here by hand. See the
-//  README "Marking paintings sold" section and server/app.py for where a real
-//  database would later make this automatic.
+//  HOW TO MARK SOMETHING SOLD  (manual — do this yourself)
+//  -------------------------------------------------------
+//  Payment is manual (CashApp/Venmo), so nothing marks a painting sold
+//  automatically. AFTER you have CONFIRMED a buyer's CashApp (or Venmo) payment
+//  actually landed, change that painting's status from "available" to "sold"
+//  below and rebuild/redeploy. Sold pieces show a "Sold" badge and can't be
+//  added to the cart. See the README "Marking paintings sold" section.
 //
 //  HOW TO SWAP IMAGES
 //  ------------------
